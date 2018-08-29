@@ -150,6 +150,18 @@
 (s/def :figma.types/style :figma.types/type-style)
 (s/def :figma.types/componentId string?)
 
+(s/def :figma.layout-constraint/vertical
+  #{"TOP" "BOTTOM" "CENTER" "TOP_BOTTOM" "SCALE"})
+
+(s/def :figma.layout-constraint/horizontal
+  #{"LEFT" "RIGHT" "CENTER" "LEFT_RIGHT" "SCALE"})
+
+(s/def :figma.types/layout-constraint
+  (s/keys :req-un [:figma.layout-constraint/vertical :figma.layout-constraint/horizontal]))
+
+(s/def :figma.types/constraints
+  (s/coll-of :figma.types/layout-constraint))
+
 ;; Node
 (s/def :figma.nodes.node/id string?)
 (s/def :figma.nodes.node/name string?)
@@ -177,7 +189,8 @@
 (s/def :figma.nodes/frame
   (s/keys :req-un [:figma.types/children
                    :figma.types/backgroundColor
-                   :figma.types/absoluteBoundingBox]
+                   :figma.types/absoluteBoundingBox
+                   :figma.types/constraints]
           :opt-un [:figma.types/opacity
                    :figma.types/effects]))
 

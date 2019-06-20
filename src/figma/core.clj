@@ -5,23 +5,34 @@
             [rum.core :as rum]
             [zprint.core :as zp]
             [figma.hiccup :as hiccup]
-            [figma.ui :as ui]
-            [figma.specs]))
+            [figma.specs]
+            [clojure.string :as str]))
 
-(defn key->url [key]
+(defn key->file-url [key]
   (str "https://api.figma.com/v1/files/" key))
 
+(defn key->image-url [key {:keys [ids format]}]
+  (str "https://api.figma.com/v1/images/" key
+       "?ids=" (str/join "," ids)
+       "&format=" (name format)))
+
 (defn get-figma-file [token key]
-  (-> (http/get (key->url key) {:headers {"X-Figma-Token" token}})
+  (-> (http/get (key->file-url key) {:headers {"X-Figma-Token" token}})
       :body
       (c/parse-string true)))
+
+(defn get-figma-images [token key ids]
+  (-> (http/get (key->image-url key {:ids ids :format :svg})
+                {:headers {"X-Figma-Token" token}})
+      :body
+      (c/parse-string true)
+      :images))
 
 ;; ==============================================
 
 (comment
   (require '[figma.specs] :reload-all)
   (require '[figma.hiccup] :reload-all)
-  (require '[figma.ui :as ui] :reload-all)
   (require '[garden.core :refer [css]])
 
   (def f-file
@@ -48,10 +59,10 @@
       (->> (str pre html)
            (spit "components.html"))
       (-> (conj components '(ns figma.components
-                              (:require [rum.core :as rum])))
+                              (:require [reagent.core :as r])))
           (->> (into []))
-          (conj `(~'rum/defc ~'figma-document [] ~figma-document)
-                `(~'rum/mount (~'figma-document) (.-body js/document)))
+          (conj `(~'defn ~'figma-document [] ~figma-document)
+                `(~'r/render [~'figma-document] (.-body js/document)))
           (->> (map zp/zprint-str)
                (interpose "\n\n")
                (apply str)

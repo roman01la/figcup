@@ -61,6 +61,9 @@
 
 (defmulti -figma-styles->css first)
 
+(defmethod -figma-styles->css :default [_]
+  nil)
+
 (defmethod -figma-styles->css :backgroundColor [[_ color]]
   {:background-color (figma-color->rgba color)})
 

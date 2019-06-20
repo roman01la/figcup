@@ -1,6 +1,6 @@
 # figma->hiccup
 
-Converts Figma designs into Hiccup and Rum/React components to render in the browser.
+Converts Figma designs into Hiccup and Reagent components to render in the browser.
 
 ## How to use
 - See commented code in core namespace
